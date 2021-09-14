@@ -1,5 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:workout_done/screens/client_screen/client_screen.dart';
+import 'package:workout_done/screens/statistic_screen/statistic_screen.dart';
+import 'package:workout_done/screens/widgets/custom_modal_bottom_sheet.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -30,8 +34,7 @@ class _CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.blue));
     return AppBar(
-      elevation: 0,
-      title: Text('Workout Done!'),
+      elevation: 30,
       centerTitle: true,
       actions: [
         _DateButton(),
@@ -48,83 +51,95 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        Flexible(
-          child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.blue.shade700, width: 24),
-                borderRadius: BorderRadius.circular(24)),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.all(20),
-              itemCount: 20,
-              itemBuilder: (context, index) => Text('${index + 1}. Тренировка'),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.blue.shade700, width: 24),
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(120),
+              bottomLeft: Radius.circular(120),
             ),
           ),
-        ),
-        const SizedBox(
-          height: 16,
+          child: ListView.builder(
+            //shrinkWrap: true,
+            padding: EdgeInsets.symmetric(vertical: 15),
+            itemCount: 20,
+            itemBuilder: (context, index) => GestureDetector(
+              onTap: (){print('$index');},
+              child: ListTile(
+                title: Center(child: Text('${index + 1}. Тренировка(сплит)')),
+              ),
+            ),
+          ),
         ),
         Align(
           alignment: Alignment.bottomRight,
-          child: ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(Colors.blue.shade700)),
-            onPressed: () {
-              showModalBottomSheet(
-                  backgroundColor: Colors.blue.shade800,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                          top: Radius.elliptical(160, 40))),
-                  context: context,
-                  builder: (context) => Container(
-                        height: MediaQuery.of(context).size.height / 2,
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            Text(
-                              'Клиенты',
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                            ),
-                            Divider(
-                              color: Colors.blue.shade300,
-                              height: 20,
-                              thickness: 2,
-                              indent: 50,
-                              endIndent: 50,
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: 15,
-                                itemBuilder: (context, index) => TextButton(
-                                  onPressed: () {
-                                    print('${index + 1}. Клиент');
-                                  },
-                                  child: Text(
-                                    '${index + 1}. Клиент',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ));
-            },
-            child: Text(
-              'Add workout',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w400),
-            ),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 28,bottom: 28),
+            child: FloatingActionButton(
+              backgroundColor: Colors.blue.shade700,
+              child: Icon(Icons.add),
+              onPressed: () {
+                showCustomModalBottomSheet(context: context, body: CustomModalAddWorkout());
+              },),
           ),
         )
+        /*const SizedBox(
+          height: kToolbarHeight,
+        ),*/
+      ],
+    );
+  }
+}
+
+class _DateButton extends StatefulWidget {
+  const _DateButton({Key? key}) : super(key: key);
+
+  @override
+  __DateButtonState createState() => __DateButtonState();
+}
+
+class __DateButtonState extends State<_DateButton> {
+  DateTime _pickedDate = DateTime.now();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        GestureDetector(
+            onTap: () {
+              _pickedDate = _pickedDate.subtract(Duration(days: 1));
+              setState(() {});
+            },
+            child: Icon(
+              Icons.arrow_left,
+              size: 32,
+            )),
+        TextButton(
+          onPressed: () async {
+            await showDatePicker(
+                    context: context,
+                    initialDate: _pickedDate,
+                    firstDate: DateTime(2021),
+                    lastDate: DateTime(2030))
+                .then((value) => _pickedDate = value ?? _pickedDate);
+            setState(() {});
+          },
+          child: Text(
+            '${_pickedDate.toString().substring(0, 10)}',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+        GestureDetector(
+            onTap: () {
+              _pickedDate = _pickedDate.add(Duration(days: 1));
+              setState(() {});
+            },
+            child: Icon(
+              Icons.arrow_right,
+              size: 32,
+            )),
       ],
     );
   }
@@ -164,40 +179,57 @@ class _CustomDrawer extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.wc),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text('Клиенты'),
-                  ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => ClientScreen()));
+                  },
+                  child: Row(
+                    children: [
+                      Icon(Icons.wc),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text('Клиенты'),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 16,
                 ),
-                Row(
-                  children: [
-                    Icon(Icons.assessment_outlined),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      'Статистика',
-                    ),
-                  ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => StatisticScreen()));
+                  },
+                  child: Row(
+                    children: [
+                      Icon(Icons.assessment_outlined),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        'Статистика',
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 16,
                 ),
-                Row(
-                  children: [
-                    Icon(Icons.exit_to_app),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text('Выход'),
-                  ],
+                GestureDetector(
+                  onTap: () {},
+                  child: Row(
+                    children: [
+                      Icon(Icons.exit_to_app),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text('Выход'),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -208,46 +240,47 @@ class _CustomDrawer extends StatelessWidget {
   }
 }
 
-class _DateButton extends StatefulWidget {
-  const _DateButton({Key? key}) : super(key: key);
-
-  @override
-  __DateButtonState createState() => __DateButtonState();
-}
-
-class __DateButtonState extends State<_DateButton> {
-  DateTime _pickedDate = DateTime.now();
+class CustomModalAddWorkout extends StatelessWidget {
+  const CustomModalAddWorkout({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-       GestureDetector(
-           onTap: (){
-             print('left');
-            },
-           child: Icon(Icons.arrow_left)),
-        TextButton(
-          onPressed: () async {
-            await showDatePicker(
-                    context: context,
-                    initialDate: _pickedDate,
-                    firstDate: DateTime(2021),
-                    lastDate: DateTime(2030))
-                .then((value) => _pickedDate = value ?? _pickedDate);
-            setState(() {});
-          },
-          child: Text(
-            '${_pickedDate.toString().substring(0, 10)}',
-            style: TextStyle(color: Colors.white),
+    return Container(
+      height: MediaQuery.of(context).size.height / 2,
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 16,
           ),
-        ),
-        GestureDetector(
-          onTap: (){
-            print('right');
-            },
-            child: Icon(Icons.arrow_right)),
-      ],
+          Text(
+            'Выберите клиента',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+          Divider(
+            color: Colors.blue.shade300,
+            height: 20,
+            thickness: 2,
+            indent: 50,
+            endIndent: 50,
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 15,
+              itemBuilder: (context, index) => TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  print('${index + 1}. Клиент');
+                },
+                child: Text(
+                  '${index + 1}. Клиент',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w400),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
