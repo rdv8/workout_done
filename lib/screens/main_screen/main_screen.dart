@@ -36,9 +36,6 @@ class _CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: 30,
       centerTitle: true,
-      actions: [
-        _DateButton(),
-      ],
     );
   }
 
@@ -61,33 +58,49 @@ class _Body extends StatelessWidget {
               bottomLeft: Radius.circular(120),
             ),
           ),
-          child: ListView.builder(
-            //shrinkWrap: true,
-            padding: EdgeInsets.symmetric(vertical: 15),
-            itemCount: 20,
-            itemBuilder: (context, index) => GestureDetector(
-              onTap: (){print('$index');},
-              child: ListTile(
-                title: Center(child: Text('${index + 1}. Тренировка(сплит)')),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  itemCount: 20,
+                  itemBuilder: (context, index) => GestureDetector(
+                    onTap: () {
+                      showMenu(
+                          context: context,
+                          position: RelativeRect.fromLTRB(30, 30, 30, 30),
+                          items: [
+                            PopupMenuItem(child: Text('PopupMenuItem $index')),
+                          ]);
+                    },
+                    child: ListTile(
+                      title: Center(
+                          child: Text('${index + 1}. Мещарикова')),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 28, left: 16),
+          child: _DateButton(),
         ),
         Align(
           alignment: Alignment.bottomRight,
           child: Padding(
-            padding: const EdgeInsets.only(right: 28,bottom: 28),
+            padding: const EdgeInsets.only(right: 28, bottom: 28),
             child: FloatingActionButton(
               backgroundColor: Colors.blue.shade700,
               child: Icon(Icons.add),
               onPressed: () {
-                showCustomModalBottomSheet(context: context, body: CustomModalAddWorkout());
-              },),
+                showCustomModalBottomSheet(
+                    context: context, body: CustomModalAddWorkout());
+              },
+            ),
           ),
-        )
-        /*const SizedBox(
-          height: kToolbarHeight,
-        ),*/
+        ),
       ],
     );
   }
@@ -105,41 +118,53 @@ class __DateButtonState extends State<_DateButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Stack(
       children: [
-        GestureDetector(
-            onTap: () {
-              _pickedDate = _pickedDate.subtract(Duration(days: 1));
+        Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: GestureDetector(
+              onTap: () {
+                _pickedDate = _pickedDate.subtract(Duration(days: 1));
+                setState(() {});
+              },
+              child: Icon(
+                Icons.arrow_left,
+                color: Colors.blue.shade900,
+                size: 32,
+              )),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: FloatingActionButton(
+            backgroundColor: Colors.blue.shade700,
+            child: Text(
+              '${_pickedDate.day}.${_pickedDate.month}',
+              style: TextStyle(fontSize: 18,color: Colors.white),
+            ),
+            onPressed: () async {
+              await showDatePicker(
+                      context: context,
+                      initialDate: _pickedDate,
+                      firstDate: DateTime(2021),
+                      lastDate: DateTime(2030))
+                  .then((value) => _pickedDate = value ?? _pickedDate);
               setState(() {});
             },
-            child: Icon(
-              Icons.arrow_left,
-              size: 32,
-            )),
-        TextButton(
-          onPressed: () async {
-            await showDatePicker(
-                    context: context,
-                    initialDate: _pickedDate,
-                    firstDate: DateTime(2021),
-                    lastDate: DateTime(2030))
-                .then((value) => _pickedDate = value ?? _pickedDate);
-            setState(() {});
-          },
-          child: Text(
-            '${_pickedDate.toString().substring(0, 10)}',
-            style: TextStyle(color: Colors.white, fontSize: 20),
           ),
         ),
-        GestureDetector(
-            onTap: () {
-              _pickedDate = _pickedDate.add(Duration(days: 1));
-              setState(() {});
-            },
-            child: Icon(
-              Icons.arrow_right,
-              size: 32,
-            )),
+        Padding(
+          padding: const EdgeInsets.only(left: 64.0,top: 12),
+          child: GestureDetector(
+              onTap: () {
+                _pickedDate = _pickedDate.add(Duration(days: 1));
+                setState(() {});
+              },
+              child: Icon(
+                Icons.arrow_right,
+                color: Colors.blue.shade900,
+                size: 32,
+              )),
+        ),
       ],
     );
   }
@@ -187,16 +212,21 @@ class _CustomDrawer extends StatelessWidget {
                   },
                   child: Row(
                     children: [
-                      Icon(Icons.wc),
+                      Icon(
+                        Icons.wc,
+                      ),
                       const SizedBox(
                         width: 8,
                       ),
-                      Text('Клиенты'),
+                      Text(
+                        'Клиенты',
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 24,
                 ),
                 GestureDetector(
                   onTap: () {
@@ -212,12 +242,13 @@ class _CustomDrawer extends StatelessWidget {
                       ),
                       Text(
                         'Статистика',
+                        style: TextStyle(fontSize: 20),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 24,
                 ),
                 GestureDetector(
                   onTap: () {},
@@ -227,7 +258,7 @@ class _CustomDrawer extends StatelessWidget {
                       const SizedBox(
                         width: 8,
                       ),
-                      Text('Выход'),
+                      Text('Выход', style: TextStyle(fontSize: 20)),
                     ],
                   ),
                 ),
@@ -253,7 +284,7 @@ class CustomModalAddWorkout extends StatelessWidget {
             height: 16,
           ),
           Text(
-            'Выберите клиента',
+            'Тренировка за ${DateTime.now().day}. ${DateTime.now().month}',
             style: TextStyle(fontSize: 20, color: Colors.white),
           ),
           Divider(
