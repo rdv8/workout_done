@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "498639595077",
+    "project_id": "workoutdone-aa5df",
+    "storage_bucket": "workoutdone-aa5df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498639595077:android:adb881cb3fbfb3df85252c",
+        "android_client_info": {
+          "package_name": "com.example.workout_done"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498639595077-setmv8al1cl0se5nmgtnnernji03p8es.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbeztZpq1ePKxSi4d_88DxKnE0q_iZnQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "498639595077-setmv8al1cl0se5nmgtnnernji03p8es.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

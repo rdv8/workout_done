@@ -1,25 +1,5 @@
 
-List<Trainer> trainerList = [
-  Trainer(id: '1', name: 'Di'),
-  Trainer(id: '2', name: 'Ai'),
-  Trainer(id: '3', name: 'Bi'),
-  Trainer(id: '4', name: 'Ci'),
-];
-
-class Trainer {
-  final String id;
-  final String name;
-
-  Trainer({required this.id, required this.name});
-}
-
-List<Client> clientList = [
-  Client(trainerId: '1',id: '1',name: 'Client1',),
-  Client(trainerId: '2',id: '2',name: 'Client2',isSplit: true),
-  Client(trainerId: '2',id: '3',name: 'Client3',isDiscount: true),
-  Client(trainerId: '3',id: '4',name: 'Client4',isKid: true,),
-  Client(trainerId: '4',id: '5',name: 'Client5',),
-];
+var constTrainerId = '3E6yJqTTIJEPUB77v6OE';
 
 class Client {
   String trainerId;

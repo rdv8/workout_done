@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:workout_done/screens/client_screen/client_screen.dart';
+import 'package:workout_done/network/firebase_firestore.dart';
+
+import 'package:workout_done/screens/client_screen/client_screen_route.dart';
 import 'package:workout_done/screens/statistic_screen/statistic_screen.dart';
 import 'package:workout_done/screens/widgets/custom_modal_bottom_sheet.dart';
 
@@ -92,9 +94,11 @@ class _Body extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 28, bottom: 28),
             child: FloatingActionButton(
+              heroTag: 1,
               backgroundColor: Colors.blue.shade700,
               child: Icon(Icons.add),
               onPressed: () {
+                FirebaseData().getTrainerList();
                 showCustomModalBottomSheet(
                     context: context, body: CustomModalAddWorkout());
               },
@@ -136,6 +140,7 @@ class __DateButtonState extends State<_DateButton> {
         Padding(
           padding: const EdgeInsets.only(left: 20),
           child: FloatingActionButton(
+            heroTag: 2,
             backgroundColor: Colors.blue.shade700,
             child: Text(
               '${_pickedDate.day}.${_pickedDate.month}',
@@ -207,8 +212,7 @@ class _CustomDrawer extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     Navigator.of(context).pop();
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => ClientScreen()));
+                    Navigator.of(context).push(clientScreenRoute());
                   },
                   child: Row(
                     children: [
