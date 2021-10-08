@@ -1,11 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:workout_done/network/firebase_firestore.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:workout_done/network/firebase_auth.dart';
+import 'package:workout_done/repository/client_list_repository.dart';
+import 'package:workout_done/repository/workout_list_repository.dart';
 import 'package:workout_done/screens/client_screen/client_screen_route.dart';
+import 'package:workout_done/screens/main_screen/bloc/main_screen_bloc.dart';
+import 'package:workout_done/screens/main_screen/bloc/main_screen_event.dart';
+import 'package:workout_done/screens/main_screen/bloc/main_screen_state.dart';
+import 'package:workout_done/screens/main_screen/main_screen_model.dart';
 import 'package:workout_done/screens/statistic_screen/statistic_screen.dart';
 import 'package:workout_done/screens/widgets/custom_modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -14,13 +20,40 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SafeArea(
-        child: Scaffold(
-          drawerScrimColor: Colors.black.withOpacity(0.6),
-          backgroundColor: Colors.blue,
-          drawer: _CustomDrawer(),
-          appBar: _CustomAppBar(),
-          body: _Body(),
+      home: BlocConsumer<MainScreenBloc, MainScreenState>(
+        listener: (context, state) {
+          if(state is LoadingMainScreenState){
+            context.read<MainScreenModel>().changeIsLoading(state.isLoading);
+          }
+        },
+        buildWhen: (previous, current) => current is DataMainScreenState,
+        builder: (context, state) => SafeArea(
+          child: Stack(
+            children: [
+              Scaffold(
+                drawerScrimColor: Colors.black.withOpacity(0.6),
+                backgroundColor: Colors.blue,
+                drawer: _CustomDrawer(),
+                appBar: _CustomAppBar(),
+                body: _Body(),
+              ),
+              Visibility(
+                visible: context.watch<MainScreenModel>().isLoading,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.black.withOpacity(0.5),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.blueAccent,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+
+            ],
+          ),
         ),
       ),
     );
@@ -32,7 +65,7 @@ class _CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   AppBar build(BuildContext context) {
-    /// Проверить свойство в AppBar'e
+    //todo: Проверить свойство в AppBar'e
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.blue));
     return AppBar(
@@ -65,7 +98,10 @@ class _Body extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                   padding: EdgeInsets.symmetric(vertical: 20),
-                  itemCount: 20,
+                  itemCount: context
+                      .read<WorkoutListRepository>()
+                      .getWorkoutDayList
+                      .length,
                   itemBuilder: (context, index) => GestureDetector(
                     onTap: () {
                       showMenu(
@@ -77,7 +113,8 @@ class _Body extends StatelessWidget {
                     },
                     child: ListTile(
                       title: Center(
-                          child: Text('${index + 1}. Мещарикова')),
+                          child: Text(
+                              '${context.read<WorkoutListRepository>().getWorkoutDayList[index].clientLastName}')),
                     ),
                   ),
                 ),
@@ -98,9 +135,15 @@ class _Body extends StatelessWidget {
               backgroundColor: Colors.blue.shade700,
               child: Icon(Icons.add),
               onPressed: () {
-                FirebaseData().getTrainerList();
                 showCustomModalBottomSheet(
-                    context: context, body: CustomModalAddWorkout());
+                    context: context,
+                    body: BlocProvider.value(
+                        value: context.read<MainScreenBloc>(),
+                        child: CustomModalAddWorkout(),),).then((value) {
+                          if (value == true) {
+                            context.read<MainScreenBloc>().add(InitialMainScreenEvent());
+                          }
+                });
               },
             ),
           ),
@@ -109,7 +152,7 @@ class _Body extends StatelessWidget {
     );
   }
 }
-
+//todo сделать отобрежение по датам
 class _DateButton extends StatefulWidget {
   const _DateButton({Key? key}) : super(key: key);
 
@@ -118,8 +161,6 @@ class _DateButton extends StatefulWidget {
 }
 
 class __DateButtonState extends State<_DateButton> {
-  DateTime _pickedDate = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -128,7 +169,10 @@ class __DateButtonState extends State<_DateButton> {
           padding: const EdgeInsets.only(top: 12),
           child: GestureDetector(
               onTap: () {
-                _pickedDate = _pickedDate.subtract(Duration(days: 1));
+                context.read<MainScreenModel>().pickedDate = context
+                    .read<MainScreenModel>()
+                    .pickedDate
+                    .subtract(Duration(days: 1));
                 setState(() {});
               },
               child: Icon(
@@ -143,25 +187,29 @@ class __DateButtonState extends State<_DateButton> {
             heroTag: 2,
             backgroundColor: Colors.blue.shade700,
             child: Text(
-              '${_pickedDate.day}.${_pickedDate.month}',
-              style: TextStyle(fontSize: 18,color: Colors.white),
+              '${context.read<MainScreenModel>().pickedDate.day}.${context.read<MainScreenModel>().pickedDate.month}',
+              style: TextStyle(fontSize: 18, color: Colors.white),
             ),
             onPressed: () async {
               await showDatePicker(
                       context: context,
-                      initialDate: _pickedDate,
+                      initialDate: context.read<MainScreenModel>().pickedDate,
                       firstDate: DateTime(2021),
                       lastDate: DateTime(2030))
-                  .then((value) => _pickedDate = value ?? _pickedDate);
+                  .then((value) => context.read<MainScreenModel>().pickedDate =
+                      value ?? context.read<MainScreenModel>().pickedDate);
               setState(() {});
             },
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 64.0,top: 12),
+          padding: const EdgeInsets.only(left: 64.0, top: 12),
           child: GestureDetector(
               onTap: () {
-                _pickedDate = _pickedDate.add(Duration(days: 1));
+                context.read<MainScreenModel>().pickedDate = context
+                    .read<MainScreenModel>()
+                    .pickedDate
+                    .add(Duration(days: 1));
                 setState(() {});
               },
               child: Icon(
@@ -194,7 +242,7 @@ class _CustomDrawer extends StatelessWidget {
                 radius: 60,
                 backgroundColor: Colors.blue,
               ),
-              Text(
+              const Text(
                 'Workout Done!',
                 style: TextStyle(fontSize: 30),
               ),
@@ -222,7 +270,7 @@ class _CustomDrawer extends StatelessWidget {
                       const SizedBox(
                         width: 8,
                       ),
-                      Text(
+                      const Text(
                         'Клиенты',
                         style: TextStyle(fontSize: 20),
                       ),
@@ -244,7 +292,7 @@ class _CustomDrawer extends StatelessWidget {
                       const SizedBox(
                         width: 8,
                       ),
-                      Text(
+                      const Text(
                         'Статистика',
                         style: TextStyle(fontSize: 20),
                       ),
@@ -255,14 +303,14 @@ class _CustomDrawer extends StatelessWidget {
                   height: 24,
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {context.read<FirebaseAuthorization>().signOutTrainer();},
                   child: Row(
                     children: [
                       Icon(Icons.exit_to_app),
                       const SizedBox(
                         width: 8,
                       ),
-                      Text('Выход', style: TextStyle(fontSize: 20)),
+                      const Text('Выход', style: TextStyle(fontSize: 20)),
                     ],
                   ),
                 ),
@@ -288,7 +336,7 @@ class CustomModalAddWorkout extends StatelessWidget {
             height: 16,
           ),
           Text(
-            'Тренировка за ${DateTime.now().day}. ${DateTime.now().month}',
+            'Тренировка за ${context.read<MainScreenModel>().pickedDate.day}. ${context.read<MainScreenModel>().pickedDate.month}',
             style: TextStyle(fontSize: 20, color: Colors.white),
           ),
           Divider(
@@ -300,14 +348,32 @@ class CustomModalAddWorkout extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 15,
+              itemCount:
+                  context.read<ClientListRepository>().getClientList.length,
               itemBuilder: (context, index) => TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
-                  print('${index + 1}. Клиент');
+                  context.read<MainScreenBloc>().add(
+                        AddWorkoutMainScreenEvent(
+                          clientLastName: context
+                              .read<ClientListRepository>()
+                              .getClientList[index]
+                              .lastname,
+                          clientId: context
+                                  .read<ClientListRepository>()
+                                  .getClientList[index]
+                                  .id ??
+                              '',
+                          date: context
+                              .read<MainScreenModel>()
+                              .pickedDate
+                              .toString()
+                              .substring(0, 10),
+                        ),
+                      );
+                  Navigator.of(context).pop(true);
                 },
                 child: Text(
-                  '${index + 1}. Клиент',
+                  '${context.read<ClientListRepository>().getClientList[index].lastname}',
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w400),
                 ),

@@ -8,7 +8,7 @@ class ClientListRepository extends ChangeNotifier{
 
   List<ClientModel> get getClientList => _clientList ?? [];
 
-  Future<void> init() async {
+  Future<void> updateClientList() async {
     print('init client list repository');
     var response = await FirebaseData().getClientList(constTrainerId);
     _clientList = response.docs

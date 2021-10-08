@@ -6,6 +6,7 @@ import 'package:workout_done/models/client_model.dart';
 import 'package:workout_done/network/firebase_firestore.dart';
 import 'package:workout_done/repository/client_list_repository.dart';
 import 'package:workout_done/screens/client_screen/bloc/client_screen_bloc.dart';
+import 'package:workout_done/screens/client_screen/bloc/client_screen_event.dart';
 import 'package:workout_done/screens/client_screen/bloc/client_screen_state.dart';
 import 'package:workout_done/screens/client_screen/client_screen_model.dart';
 import 'package:workout_done/screens/client_screen/workout_history_screen/workout_history_screen.dart';
@@ -17,57 +18,103 @@ class ClientScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ClientScreenBloc, ClientScreenState>(
-        listener: (context, state) {}, builder: (context, state) => _Body());
+      listener: (context, state) {
+        if (state is LoadingClientScreenState) {
+          context.read<ClientScreenModel>().changeIsLoading(state.isLoading);
+        }
+      },
+      buildWhen: (previous, current) => current is ClientListScreenDataState,
+      builder: (context, state) =>
+          _Body(clientList: context.read<ClientListRepository>().getClientList),
+    );
   }
 }
 
 class _Body extends StatelessWidget {
-  const _Body({Key? key}) : super(key: key);
+  final List<ClientModel> _clientList;
+
+  const _Body({required clientList, Key? key})
+      : _clientList = clientList,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Клиенты'),
-      ),
-      body: Column(
-        children: [
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount:
-                context.read<ClientListRepository>().getClientList.length,
-            itemBuilder: (context, index) => ListTile(
-              onTap: () {
-                showCustomModalBottomSheet(
-                    context: context,
-                    body: ChangeNotifierProvider.value(
-                      value: ClientScreenModel()..initClient(context.read<ClientListRepository>().getClientList[index]),
-                      child: CustomModalClient(
-                        client: context
-                            .read<ClientListRepository>()
-                            .getClientList[index],
-                      ),
-                    ));
-              },
-              title: Center(
+    return Stack(children: [
+      Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text('Клиенты'),
+        ),
+        body: Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: _clientList.length,
+              itemBuilder: (context, index) => ListTile(
+                onTap: () {
+                  showCustomModalBottomSheet(
+                      context: context,
+                      body: BlocProvider.value(
+                        value: context.read<ClientScreenBloc>(),
+                        child: ChangeNotifierProvider.value(
+                          value: context.read<ClientScreenModel>()
+                            ..initClient(_clientList[index]),
+                          child: CustomModalClient(
+                            client: _clientList[index],
+                          ),
+                        ),
+                      )).then((value) {
+                    if (value == true) {
+                      context
+                          .read<ClientScreenBloc>()
+                          .add(InitialClientScreenEvent());
+                    }
+                  });
+                },
+                title: Center(
                   child: Text(
-                      '${index + 1} ${context.read<ClientListRepository>().getClientList[index].name}')),
+                      '${_clientList[index].name.isEmpty ? '${index + 1}' : _clientList[index].name}'),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                await showCustomModalBottomSheet(
+                        context: context,
+                        body: ChangeNotifierProvider.value(
+                            value: context.read<ClientScreenModel>()..clearClientModel(),
+                            child: BlocProvider.value(
+                                value: context.read<ClientScreenBloc>(),
+                                child: CustomModalClient())))
+                    .then((value) {
+                  if (value == true) {
+                    context
+                        .read<ClientScreenBloc>()
+                        .add(InitialClientScreenEvent());
+                  }
+                });
+              },
+              child: const Text('Добавить клиента'),
+            ),
+          ],
+        ),
+      ),
+      Visibility(
+        visible: context.watch<ClientScreenModel>().isLoading,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.black.withOpacity(0.5),
+          child: Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.blueAccent,
+              color: Colors.white,
             ),
           ),
-          TextButton(
-            onPressed: () {
-              showCustomModalBottomSheet(
-                  context: context,
-                  body: ChangeNotifierProvider.value(
-                      value: ClientScreenModel(), child: CustomModalClient()));
-            },
-            child: Text('Добавить клиента'),
-          ),
-        ],
-      ),
-    );
+        ),
+      )
+    ]);
   }
 }
 
@@ -75,7 +122,7 @@ class CustomModalClient extends StatelessWidget {
   final ClientModel? client;
 
   const CustomModalClient({this.client, Key? key}) : super(key: key);
-
+// TODO: Чекнуть размер модалки, убрать оверсайз
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -146,43 +193,73 @@ class CustomModalClient extends StatelessWidget {
               child: client == null
                   ? ElevatedButton(
                       onPressed: () {
-                        FirebaseData().addClient(
-                            constTrainerId,
-                            ClientModel(
-                              lastname: context
-                                  .read<ClientScreenModel>()
-                                  .lastNameController
-                                  .text,
-                              name: context
-                                  .read<ClientScreenModel>()
-                                  .nameController
-                                  .text,
-                              isSplit:
-                                  context.read<ClientScreenModel>().isSplit,
-                              isTeenage:
-                                  context.read<ClientScreenModel>().isTeenage,
-                              isDiscount:
-                                  context.read<ClientScreenModel>().isDiscount,
-                            ));
-                        Navigator.pop(context);
-                        ClientListRepository().init();
+                        context.read<ClientScreenBloc>().add(
+                              AddClientEvent(
+                                client: ClientModel(
+                                  lastname: context
+                                      .read<ClientScreenModel>()
+                                      .lastNameController
+                                      .text,
+                                  name: context
+                                      .read<ClientScreenModel>()
+                                      .nameController
+                                      .text,
+                                  isSplit:
+                                      context.read<ClientScreenModel>().isSplit,
+                                  isTeenage: context
+                                      .read<ClientScreenModel>()
+                                      .isTeenage,
+                                  isDiscount: context
+                                      .read<ClientScreenModel>()
+                                      .isDiscount,
+                                ),
+                              ),
+                            );
+                        Navigator.pop(context, true);
                       },
-                      child: Text('Добавить'))
-                  : Row(
+                      child: const Text('Добавить'))
+                  : Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
-                            onPressed: () {
-                              FirebaseData().delClient(constTrainerId, client?.id ?? '');
-                              Navigator.pop(context);
-                            }, child: Text('Удалить клиента')),
+                            onPressed: () async {
+                              await FirebaseData()
+                                  .delClient(constTrainerId, client?.id ?? '');
+                              Navigator.pop(context, true);
+                            },
+                            child: const Text('Удалить клиента')),
                         ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
                                       WorkoutHistoryScreen()));
                             },
-                            child: Text('История тренировок'))
+                            child: const Text('История тренировок')),
+                        ElevatedButton(
+                            onPressed: () async {
+                             context.read<ClientScreenBloc>().add(ChangeClientEvent(client: ClientModel(
+                               isHide: context.read<ClientScreenModel>().isHide,
+                               id: context.read<ClientScreenModel>().id,
+                               lastname: context
+                                   .read<ClientScreenModel>()
+                                   .lastNameController
+                                   .text,
+                               name: context
+                                   .read<ClientScreenModel>()
+                                   .nameController
+                                   .text,
+                               isSplit:
+                               context.read<ClientScreenModel>().isSplit,
+                               isTeenage: context
+                                   .read<ClientScreenModel>()
+                                   .isTeenage,
+                               isDiscount: context
+                                   .read<ClientScreenModel>()
+                                   .isDiscount,
+                             )));
+                              Navigator.pop(context, true);
+                            },
+                            child: const Text('Сохранить изменения')),
                       ],
                     )),
         ],

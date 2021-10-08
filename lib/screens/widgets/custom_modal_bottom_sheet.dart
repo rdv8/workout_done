@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
-Future<void> showCustomModalBottomSheet({required BuildContext context, required Widget body}) {
-  return showModalBottomSheet(
+// todo уточнить тип возвращаемый модалкой
+Future<dynamic> showCustomModalBottomSheet({required BuildContext context, required Widget body}) async{
+  return await showModalBottomSheet(
       isScrollControlled: true,
       backgroundColor: Colors.blue.shade800,
       shape: RoundedRectangleBorder(

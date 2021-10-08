@@ -18,4 +18,14 @@ class ClientModel {
     required this.isTeenage,
     required this.isDiscount,
   });
+
+  factory ClientModel.empty() => ClientModel(
+   isDiscount: false,
+    isTeenage: false,
+    isSplit: false,
+    isHide: false,
+    name: '',
+    lastname: '',
+    id: ''
+  );
 }

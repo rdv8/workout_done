@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:workout_done/network/firebase_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:workout_done/network/firebase_auth.dart';
 
 class StatisticScreen extends StatelessWidget {
   const StatisticScreen({Key? key}) : super(key: key);
@@ -29,15 +30,13 @@ class StatisticScreen extends StatelessWidget {
                               ))
                       : Text('Пусто'))),
           ElevatedButton(
-              onPressed: () {
-                FirebaseData().addTrainer();
-              },
-              child: Text('add trainer 3E6yJqTTIJEPUB77v6OE')),
+              onPressed: () {},
+              child: Text('123')),
           ElevatedButton(
               onPressed: () {
-                FirebaseData().getTrainerList();
+               context.read<FirebaseAuthorization>().registerTrainer(email: 'test@main.ru', password: '123456');
               },
-              child: Text('trainers'))
+              child: Text('add trainer'))
         ],
       ),
     );

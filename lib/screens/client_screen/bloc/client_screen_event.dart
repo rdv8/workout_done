@@ -9,3 +9,13 @@ class LoadClientEvent extends ClientScreenEvent{
   final ClientModel client;
   LoadClientEvent({required this.client});
 }
+
+class AddClientEvent extends ClientScreenEvent{
+  final ClientModel client;
+  AddClientEvent({required this.client});
+}
+
+class ChangeClientEvent extends ClientScreenEvent {
+  final ClientModel client;
+  ChangeClientEvent({required this.client});
+}

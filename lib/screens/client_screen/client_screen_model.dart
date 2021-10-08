@@ -13,10 +13,11 @@ class ClientScreenModel extends ChangeNotifier {
   bool isTeenage = false;
   bool isDiscount = false;
   bool isHide = false;
-  List<ClientModel> clientList = [];
+  bool isLoading = false;
 
+// TODO: Проверить иниациализацию клиента
   void initClient (ClientModel client) {
-    print('init client screen');
+    print('=====================init client screen');
     id = client.id ?? '';
     lastNameController.text = client.lastname;
     nameController.text = client.name;
@@ -24,6 +25,20 @@ class ClientScreenModel extends ChangeNotifier {
     isTeenage = client.isTeenage;
     isDiscount = client.isDiscount;
     isHide = client.isHide ?? false;
+
+  }
+
+  void clearClientModel () {
+
+    lastNameController.text = '';
+    nameController.text = '';
+
+    id = '';
+    isSplit = false;
+    isTeenage = false;
+    isDiscount = false;
+    isHide = false;
+    isLoading = false;
 
   }
 
@@ -38,6 +53,10 @@ class ClientScreenModel extends ChangeNotifier {
   }
   void changeIsHide (bool value){
     isHide = value;
+  }
+  void changeIsLoading (bool value) {
+    isLoading = value;
+    notifyListeners();
   }
 
 
