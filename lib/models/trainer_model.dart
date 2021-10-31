@@ -1,11 +1,14 @@
 class Trainer {
-  String id;
-  String email;
-  String password;
+  final String id;
+  final String? email;
 
   Trainer({
     required this.id,
     required this.email,
-    required this.password,
   });
+
+  factory Trainer.empty() => Trainer(
+        id: '',
+        email: '',
+      );
 }

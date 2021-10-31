@@ -11,3 +11,14 @@ class WorkoutHistoryScreen extends StatelessWidget {
     );
   }
 }
+
+//todo история тренировок в модалке с клиентом по id
+/*
+final y = await context.read<FirebaseData>().getClientWorkoutList(
+context.read<TrainerRepository>().getTrainer.id,
+context
+    .read<ClientListRepository>()
+.getClientList[0]
+.id ??
+'',
+);*/

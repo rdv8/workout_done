@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:workout_done/network/firebase_firestore.dart';
+import 'package:workout_done/network/firebase_data.dart';
 import 'package:workout_done/repository/client_list_repository.dart';
+import 'package:workout_done/repository/trainer_repository.dart';
 import 'package:workout_done/screens/client_screen/bloc/client_screen_bloc.dart';
 import 'package:workout_done/screens/client_screen/bloc/client_screen_event.dart';
 import 'package:workout_done/screens/client_screen/client_screen.dart';
@@ -19,6 +20,7 @@ class ClientScreenInit extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ClientScreenBloc>(
       create: (_) => ClientScreenBloc(
+        trainerRepository: context.read<TrainerRepository>(),
         clientListRepository: context.read<ClientListRepository>(),
         firebaseData: context.read<FirebaseData>(),
       )..add(InitialClientScreenEvent()),

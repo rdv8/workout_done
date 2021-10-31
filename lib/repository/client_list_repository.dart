@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:workout_done/constants/test_values.dart';
 import 'package:workout_done/models/client_model.dart';
-import 'package:workout_done/network/firebase_firestore.dart';
+import 'package:workout_done/network/firebase_data.dart';
+import 'package:workout_done/repository/trainer_repository.dart';
 
 class ClientListRepository extends ChangeNotifier{
+  late final TrainerRepository _trainerRepository;
   List<ClientModel>? _clientList;
 
   List<ClientModel> get getClientList => _clientList ?? [];
 
+  void init({required TrainerRepository trainerRepository}){
+    _trainerRepository = trainerRepository;
+    if (_trainerRepository.getTrainer.id.isNotEmpty) {
+      updateClientList();
+    }
+  }
+
   Future<void> updateClientList() async {
-    print('init client list repository');
-    var response = await FirebaseData().getClientList(constTrainerId);
+    var response = await FirebaseData().getClientList(_trainerRepository.getTrainer.id);
     _clientList = response.docs
         .map(
           (e) => ClientModel(
@@ -23,5 +30,10 @@ class ClientListRepository extends ChangeNotifier{
             isHide: e['isHide'],
           ),
         ).toList();
+    _clientList?.sort((a,b){return a.lastname.compareTo(b.lastname);});
+  }
+
+  void clearClientList() {
+    _clientList = [];
   }
 }

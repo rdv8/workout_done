@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:workout_done/models/client_model.dart';
 import 'package:workout_done/models/trainer_model.dart';
@@ -15,18 +16,19 @@ class FirebaseData extends ChangeNotifier {
     print('${trainerList.docs.map((e) => e['email']).toList()}');
   }
 
-  Future<void> addTrainer(Trainer trainer) async {
-    await _trainers.add({'email': '123', 'password': '123'});
+  Future<void> addTrainer({required User? user}) async {
+    await _trainers.doc(user?.uid).set({
+      'email': user?.email,
+    });
   }
 
   Future<void> delTrainer(Trainer trainer) async {
     await _trainers.doc('ZASnnniv7ZG0EYcfwlUf').delete();
   }
 
-  Future<void> updateTrainer(Trainer trainer) async {
-    await _trainers.doc(trainer.id).update({
-      'email': trainer.email,
-      'password': trainer.password,
+  Future<void> updateTrainer({required User? user}) async {
+    await _trainers.doc(user?.uid).update({
+      'email': user?.email,
     });
   }
 
@@ -73,21 +75,26 @@ class FirebaseData extends ChangeNotifier {
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getDayWorkoutList(
-      String trainerID, String date) async {
+      String trainerID, DateTime date) async {
     final response = await _trainers
         .doc(trainerID)
         .collection('workouts')
-        .where('date', isEqualTo: date)
+        .where('day', isEqualTo: date.day)
+        .where('month', isEqualTo: date.month)
+        .where('year', isEqualTo: date.year)
         .get();
     return response;
   }
- //todo: сделать месячный фильтр
+
+  //todo orderBy сделать сортированные листы
+
   Future<QuerySnapshot<Map<String, dynamic>>> getMonthWorkoutList(
-      String trainerID, String date) async {
+      String trainerID, DateTime date) async {
     final response = await _trainers
         .doc(trainerID)
         .collection('workouts')
-        .where('date', isEqualTo: date)
+        .where('year', isEqualTo: date.year)
+        .where('month', isEqualTo: date.month)
         .get();
     return response;
   }
@@ -103,23 +110,23 @@ class FirebaseData extends ChangeNotifier {
   }
 
   Future<void> addWorkout(Workout workout) async {
-    await _trainers
-        .doc(workout.trainerId)
-        .collection('workouts')
-        .add({
+    await _trainers.doc(workout.trainerId).collection('workouts').add({
       'trainerId': workout.trainerId,
       'clientId': workout.clientId,
-      'clientLastName' : workout.clientLastName,
-      'date': workout.date,
+      'clientLastName': workout.clientLastName,
+      'day': workout.day,
+      'month': workout.month,
+      'year': workout.year,
+      'isSplit': workout.isSplit,
+      'isDiscount': workout.isDiscount,
+      'isTeenage': workout.isTeenage,
+
     });
   }
 
-  Future<void> delWorkout(
-      Workout workout) async {
+  Future<void> delWorkout(Workout workout) async {
     await _trainers
         .doc(workout.trainerId)
-        .collection('clients')
-        .doc(workout.clientId)
         .collection('workouts')
         .doc(workout.id)
         .delete();
@@ -133,7 +140,9 @@ class FirebaseData extends ChangeNotifier {
         .collection('workouts')
         .doc(workout.id)
         .update({
-      'date': workout.date,
+      'day': workout.day,
+      'month': workout.month,
+      'year': workout.year,
     });
   }
 }

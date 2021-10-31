@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:workout_done/constants/test_values.dart';
+import 'package:workout_done/constants/app_theme.dart';
 import 'package:workout_done/models/client_model.dart';
-import 'package:workout_done/network/firebase_firestore.dart';
+import 'package:workout_done/network/firebase_data.dart';
 import 'package:workout_done/repository/client_list_repository.dart';
+import 'package:workout_done/repository/trainer_repository.dart';
 import 'package:workout_done/screens/client_screen/bloc/client_screen_bloc.dart';
 import 'package:workout_done/screens/client_screen/bloc/client_screen_event.dart';
 import 'package:workout_done/screens/client_screen/bloc/client_screen_state.dart';
 import 'package:workout_done/screens/client_screen/client_screen_model.dart';
 import 'package:workout_done/screens/client_screen/workout_history_screen/workout_history_screen.dart';
+import 'package:workout_done/screens/widgets/custom_circular_indicator.dart';
 import 'package:workout_done/screens/widgets/custom_modal_bottom_sheet.dart';
+import 'package:workout_done/screens/widgets/gradient_container.dart';
 
 class ClientScreen extends StatelessWidget {
   const ClientScreen({Key? key}) : super(key: key);
@@ -24,8 +27,19 @@ class ClientScreen extends StatelessWidget {
         }
       },
       buildWhen: (previous, current) => current is ClientListScreenDataState,
-      builder: (context, state) =>
-          _Body(clientList: context.read<ClientListRepository>().getClientList),
+      builder: (context, state) => Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            centerTitle: true,
+            title: const Text(
+              'Клиенты',
+              style: TextStyle(color: AppColors.lightColor),
+            ),
+          ),
+          body: GradientContainer(
+            child: _Body(
+                clientList: context.read<ClientListRepository>().getClientList),
+          )),
     );
   }
 }
@@ -33,23 +47,18 @@ class ClientScreen extends StatelessWidget {
 class _Body extends StatelessWidget {
   final List<ClientModel> _clientList;
 
-  const _Body({required clientList, Key? key})
+  const _Body({required List<ClientModel> clientList, Key? key})
       : _clientList = clientList,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text('Клиенты'),
-        ),
-        body: Column(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: ListView.builder(
               itemCount: _clientList.length,
               itemBuilder: (context, index) => ListTile(
                 onTap: () {
@@ -74,45 +83,49 @@ class _Body extends StatelessWidget {
                 },
                 title: Center(
                   child: Text(
-                      '${_clientList[index].name.isEmpty ? '${index + 1}' : _clientList[index].name}'),
+                    '${_clientList[index].lastname.isEmpty ? '${index + 1}' : _clientList[index].lastname} ${_clientList[index].isSplit == true ? '(Сплит)' : ''}',
+                    style: TextStyle(color: AppColors.accentColor),
+                  ),
                 ),
               ),
             ),
-            TextButton(
-              onPressed: () async {
-                await showCustomModalBottomSheet(
-                        context: context,
-                        body: ChangeNotifierProvider.value(
-                            value: context.read<ClientScreenModel>()..clearClientModel(),
-                            child: BlocProvider.value(
-                                value: context.read<ClientScreenBloc>(),
-                                child: CustomModalClient())))
-                    .then((value) {
-                  if (value == true) {
-                    context
-                        .read<ClientScreenBloc>()
-                        .add(InitialClientScreenEvent());
-                  }
-                });
-              },
-              child: const Text('Добавить клиента'),
+          ),
+          ElevatedButton(
+            style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    side: BorderSide(color: AppColors.lightColor)))),
+            onPressed: () async {
+              await showCustomModalBottomSheet(
+                      context: context,
+                      body: ChangeNotifierProvider.value(
+                          value: context.read<ClientScreenModel>()
+                            ..clearClientModel(),
+                          child: BlocProvider.value(
+                              value: context.read<ClientScreenBloc>(),
+                              child: CustomModalClient())))
+                  .then((value) {
+                if (value == true) {
+                  context
+                      .read<ClientScreenBloc>()
+                      .add(InitialClientScreenEvent());
+                }
+              });
+            },
+            child: const Text(
+              'Добавить клиента',
+              style: TextStyle(
+                color: AppColors.accentColor,
+              ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+        ],
       ),
       Visibility(
         visible: context.watch<ClientScreenModel>().isLoading,
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: Colors.black.withOpacity(0.5),
-          child: Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.blueAccent,
-              color: Colors.white,
-            ),
-          ),
-        ),
+        child: CustomCircularIndicator(),
       )
     ]);
   }
@@ -122,6 +135,7 @@ class CustomModalClient extends StatelessWidget {
   final ClientModel? client;
 
   const CustomModalClient({this.client, Key? key}) : super(key: key);
+
 // TODO: Чекнуть размер модалки, убрать оверсайз
   @override
   Widget build(BuildContext context) {
@@ -135,24 +149,40 @@ class CustomModalClient extends StatelessWidget {
           ),
           Text(
             client == null ? 'Добавить клиента' : "${client?.name}",
-            style: TextStyle(fontSize: 20, color: Colors.white),
+            style: TextStyle(fontSize: 20, color: AppColors.accentColor),
           ),
           Divider(
-            color: Colors.blue.shade300,
+            color: AppColors.lightColor,
             height: 20,
             thickness: 2,
             indent: 50,
             endIndent: 50,
           ),
           TextFormField(
+            textCapitalization: TextCapitalization.words,
+            cursorColor: AppColors.lightColor,
+            style: TextStyle(color: AppColors.accentColor),
             focusNode: context.read<ClientScreenModel>().lastNameFocusNode,
             controller: context.read<ClientScreenModel>().lastNameController,
-            decoration: InputDecoration(hintText: 'Фамилия'),
+            decoration: InputDecoration(
+              hintText: 'Фамилия',
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.lightColor),
+              ),
+            ),
           ),
           TextFormField(
+            textCapitalization: TextCapitalization.words,
+            cursorColor: AppColors.lightColor,
+            style: TextStyle(color: AppColors.accentColor),
             focusNode: context.read<ClientScreenModel>().nameFocusNode,
             controller: context.read<ClientScreenModel>().nameController,
-            decoration: InputDecoration(hintText: 'Имя'),
+            decoration: InputDecoration(
+              hintText: 'Имя',
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.lightColor),
+              ),
+            ),
           ),
           CheckBoxRow(
             title: 'Сплит',
@@ -192,6 +222,11 @@ class CustomModalClient extends StatelessWidget {
                   bottom: MediaQuery.of(context).viewInsets.bottom),
               child: client == null
                   ? ElevatedButton(
+                      style: ButtonStyle(
+                          shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      color: AppColors.lightColor)))),
                       onPressed: () {
                         context.read<ClientScreenBloc>().add(
                               AddClientEvent(
@@ -217,14 +252,23 @@ class CustomModalClient extends StatelessWidget {
                             );
                         Navigator.pop(context, true);
                       },
-                      child: const Text('Добавить'))
+                      child: const Text(
+                        'Добавить',
+                        style: TextStyle(
+                          color: AppColors.accentColor,
+                        ),
+                      ))
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
                             onPressed: () async {
-                              await FirebaseData()
-                                  .delClient(constTrainerId, client?.id ?? '');
+                              await FirebaseData().delClient(
+                                  context
+                                      .read<TrainerRepository>()
+                                      .getTrainer
+                                      .id,
+                                  client?.id ?? '');
                               Navigator.pop(context, true);
                             },
                             child: const Text('Удалить клиента')),
@@ -237,26 +281,32 @@ class CustomModalClient extends StatelessWidget {
                             child: const Text('История тренировок')),
                         ElevatedButton(
                             onPressed: () async {
-                             context.read<ClientScreenBloc>().add(ChangeClientEvent(client: ClientModel(
-                               isHide: context.read<ClientScreenModel>().isHide,
-                               id: context.read<ClientScreenModel>().id,
-                               lastname: context
-                                   .read<ClientScreenModel>()
-                                   .lastNameController
-                                   .text,
-                               name: context
-                                   .read<ClientScreenModel>()
-                                   .nameController
-                                   .text,
-                               isSplit:
-                               context.read<ClientScreenModel>().isSplit,
-                               isTeenage: context
-                                   .read<ClientScreenModel>()
-                                   .isTeenage,
-                               isDiscount: context
-                                   .read<ClientScreenModel>()
-                                   .isDiscount,
-                             )));
+                              context
+                                  .read<ClientScreenBloc>()
+                                  .add(ChangeClientEvent(
+                                      client: ClientModel(
+                                    isHide: context
+                                        .read<ClientScreenModel>()
+                                        .isHide,
+                                    id: context.read<ClientScreenModel>().id,
+                                    lastname: context
+                                        .read<ClientScreenModel>()
+                                        .lastNameController
+                                        .text,
+                                    name: context
+                                        .read<ClientScreenModel>()
+                                        .nameController
+                                        .text,
+                                    isSplit: context
+                                        .read<ClientScreenModel>()
+                                        .isSplit,
+                                    isTeenage: context
+                                        .read<ClientScreenModel>()
+                                        .isTeenage,
+                                    isDiscount: context
+                                        .read<ClientScreenModel>()
+                                        .isDiscount,
+                                  )));
                               Navigator.pop(context, true);
                             },
                             child: const Text('Сохранить изменения')),
@@ -293,7 +343,10 @@ class _CheckBoxRowState extends State<CheckBoxRow> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(widget.title),
+        Text(
+          widget.title,
+          style: TextStyle(color: AppColors.accentColor),
+        ),
         const SizedBox(
           width: 8,
         ),
