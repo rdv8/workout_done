@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:workout_done/bloc_observer/app_bloc_observer.dart';
 import 'package:workout_done/constants/app_theme.dart';
 import 'package:workout_done/network/firebase_auth.dart';
 import 'package:workout_done/network/firebase_data.dart';
@@ -16,6 +18,7 @@ void main() async {
   await Firebase.initializeApp();
   print('___Initialed User___${FirebaseAuth.instance.currentUser?.uid}');
  //todo сделать инициализацию списков клиентов и тренировок до открытие приложения?
+  Bloc.observer = AppBlocObserver();
   runApp(
     MultiProvider(
       providers: [

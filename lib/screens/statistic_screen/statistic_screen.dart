@@ -28,55 +28,58 @@ class StatisticScreen extends StatelessWidget {
                   ),
                   body:
                   GradientContainer(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // todo сделать переключение или выбор месяца. Расписать по фамилиям кол-во тре-ок и сплит, дети?
-                        Center(
-                          child: Text(
-                              'Количество тренирвок за ${Constants.monthList[context.read<StatisticScreenModel>().pickedDate.month]}',style: TextStyle(color: AppColors.accentColor),),
-                        ),
-                        Center(
-                          child: Text(
-                              '${context.read<WorkoutListRepository>().getWorkoutMonthList.length}',style: TextStyle(color: AppColors.accentColor),),
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        ...state.statisticList.entries.map(
-                          (workout) => Container(
-                            width: 100,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('${workout.key}',style: TextStyle(color: AppColors.accentColor),),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text('${workout.value}',style: TextStyle(color: AppColors.accentColor),),
-                              ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // todo сделать переключение или выбор месяца. Расписать по фамилиям кол-во тре-ок и сплит, дети?
+                          Center(
+                            child: Text(
+                                'Количество тренирвок за ${Constants.monthList[context.read<StatisticScreenModel>().pickedDate.month]}',style: TextStyle(color: AppColors.accentColor),),
+                          ),
+                          Center(
+                            child: Text(
+                                '${context.read<WorkoutListRepository>().getWorkoutMonthList.length}',style: TextStyle(color: AppColors.accentColor),),
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          ...state.statisticList.entries.map(
+                            (workout) => Container(
+                              width: MediaQuery.of(context).size.width/2,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(child: Text('${workout.key}',style: TextStyle(color: AppColors.accentColor),)),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Text('${workout.value}',style: TextStyle(color: AppColors.accentColor),),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        ...state.statisticTypeList.entries.map(
-                          (type) => Container(
-                            width: 100,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('${type.key}',style: TextStyle(color: AppColors.accentColor),),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text('${type.value}',style: TextStyle(color: AppColors.accentColor),),
-                              ],
+                          SizedBox(
+                            height: 16,
+                          ),
+                          ...state.statisticTypeList.entries.map(
+                            (type) => Container(
+                              width: 100,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('${type.key}',style: TextStyle(color: AppColors.accentColor),),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Text('${type.value}',style: TextStyle(color: AppColors.accentColor),),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 )

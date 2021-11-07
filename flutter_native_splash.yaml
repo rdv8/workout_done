@@ -1,0 +1,9 @@
+flutter_native_splash:
+  color: "#085a42"
+  #background_image: "assets/background.png"
+  #image: assets/splash.png
+  #android: true
+  #ios: true
+  #web: false
+  #android_gravity: bottom
+  #ios_content_mode: bottom

@@ -30,28 +30,26 @@ class MainScreen extends StatelessWidget {
         }
       },
       buildWhen: (previous, current) => current is DataMainScreenState,
-      builder: (context, state) => SafeArea(
-        child: Stack(
-          children: [
-            Scaffold(
-              floatingActionButton: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _DateButton(),
-                  _CustomFab(),
-                ],
-              ),
-              drawerScrimColor: Colors.black.withOpacity(0.6),
-              drawer: _CustomDrawer(),
-              appBar: _CustomAppBar(),
-              body: GradientContainer(child: _Body()),
+      builder: (context, state) => Stack(
+        children: [
+          Scaffold(
+            floatingActionButton: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _DateButton(),
+                _CustomFab(),
+              ],
             ),
-            Visibility(
-              visible: context.watch<MainScreenModel>().isLoading,
-              child: CustomCircularIndicator(),
-            )
-          ],
-        ),
+            drawerScrimColor: Colors.black.withOpacity(0.6),
+            drawer: _CustomDrawer(),
+            appBar: _CustomAppBar(),
+            body: GradientContainer(child: _Body()),
+          ),
+          Visibility(
+            visible: context.watch<MainScreenModel>().isLoading,
+            child: CustomCircularIndicator(),
+          )
+        ],
       ),
     );
   }
@@ -87,10 +85,12 @@ class _Body extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             context.read<WorkoutListRepository>().getWorkoutDayList.length == 0
-                ? Center(
-                    child: Text(
-                      'За этот день не проведено ни одной тренировки.',
-                      style: TextStyle(color: AppColors.accentColor),
+                ? Expanded(
+                    child: Center(
+                      child: Text(
+                        'За этот день не проведено ни одной тренировки.',
+                        style: TextStyle(color: AppColors.accentColor),
+                      ),
                     ),
                   )
                 : Expanded(
@@ -170,6 +170,55 @@ class _Body extends StatelessWidget {
                               ))));
                         }),
                   ),
+            GestureDetector(
+              onHorizontalDragEnd: (details) {
+                if (details.primaryVelocity != null) {
+                  if (details.primaryVelocity! > 0) {
+                    context.read<MainScreenModel>().pickedDate = context
+                        .read<MainScreenModel>()
+                        .pickedDate
+                        .subtract(Duration(days: 1));
+                    context.read<MainScreenBloc>().add(
+                        ChangeDayWorkoutMainScreenEvent(
+                            date: context.read<MainScreenModel>().pickedDate));
+
+                  } else if (details.primaryVelocity! < 0) {
+                    context.read<MainScreenModel>().pickedDate = context
+                        .read<MainScreenModel>()
+                        .pickedDate
+                        .add(Duration(days: 1));
+                    context.read<MainScreenBloc>().add(
+                        ChangeDayWorkoutMainScreenEvent(
+                            date: context.read<MainScreenModel>().pickedDate));
+
+                  }
+                }
+              },
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(children: [
+                      Icon(Icons.chevron_left,color: AppColors.lightColor,),
+                      Icon(Icons.chevron_left,color: AppColors.lightColor,),
+                    ],),
+                    Row(children: [
+                      Icon(Icons.chevron_right,color: AppColors.lightColor,),
+                      Icon(Icons.chevron_right,color: AppColors.lightColor,),
+                    ],)
+
+                ],),
+                height: 50,
+                width: MediaQuery.of(context).size.width / 2,
+                decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.lightColor),
+                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.mainColor),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ],
@@ -177,91 +226,40 @@ class _Body extends StatelessWidget {
   }
 }
 
-//todo сделать отобрежение по датам Лучше!
-class _DateButton extends StatefulWidget {
+
+class _DateButton extends StatelessWidget {
   const _DateButton({Key? key}) : super(key: key);
 
   @override
-  __DateButtonState createState() => __DateButtonState();
-}
-
-class __DateButtonState extends State<_DateButton> {
-  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20.0),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: GestureDetector(
-                onTap: () {
-                  context.read<MainScreenModel>().pickedDate = context
+      padding: const EdgeInsets.only(left: 32),
+      child: FloatingActionButton(
+        backgroundColor: AppColors.lightColor,
+        child: Text(
+          '${context.read<MainScreenModel>().pickedDate.day}.${context.read<MainScreenModel>().pickedDate.month}',
+          style: TextStyle(
+            fontSize: 18,
+            color: AppColors.mainColor,
+          ),
+        ),
+        onPressed: () async {
+          await showDatePicker(
+                  helpText: 'Выберите дату:',
+                  cancelText: 'Отмена',
+                  confirmText: 'Выбрать',
+                  context: context,
+                  initialDate: context.read<MainScreenModel>().pickedDate,
+                  firstDate: DateTime(2021),
+                  lastDate: DateTime(2030))
+              .then((value) => context
                       .read<MainScreenModel>()
-                      .pickedDate
-                      .subtract(Duration(days: 1));
-                  setState(() {});
-                  context.read<MainScreenBloc>().add(
-                      ChangeDayWorkoutMainScreenEvent(
-                          date: context.read<MainScreenModel>().pickedDate));
-                },
-                child: Icon(
-                  Icons.arrow_left,
-                  color: AppColors.lightColor,
-                  size: 32,
-                )),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: FloatingActionButton(
-              backgroundColor: AppColors.lightColor,
-              child: Text(
-                '${context.read<MainScreenModel>().pickedDate.day}.${context.read<MainScreenModel>().pickedDate.month}',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: AppColors.mainColor,
-                ),
-              ),
-              onPressed: () async {
-                await showDatePicker(
-                        helpText: 'Выберите дату:',
-                        cancelText: 'Отмена',
-                        confirmText: 'Выбрать',
-                        context: context,
-                        initialDate: context.read<MainScreenModel>().pickedDate,
-                        firstDate: DateTime(2021),
-                        lastDate: DateTime(2030))
-                    .then((value) => context
-                            .read<MainScreenModel>()
-                            .pickedDate =
-                        value ?? context.read<MainScreenModel>().pickedDate);
-                setState(() {});
-                context.read<MainScreenBloc>().add(
-                    ChangeDayWorkoutMainScreenEvent(
-                        date: context.read<MainScreenModel>().pickedDate));
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 64.0, top: 12),
-            child: GestureDetector(
-                onTap: () {
-                  context.read<MainScreenModel>().pickedDate = context
-                      .read<MainScreenModel>()
-                      .pickedDate
-                      .add(Duration(days: 1));
-                  setState(() {});
-                  context.read<MainScreenBloc>().add(
-                      ChangeDayWorkoutMainScreenEvent(
-                          date: context.read<MainScreenModel>().pickedDate));
-                },
-                child: Icon(
-                  Icons.arrow_right,
-                  color: AppColors.lightColor,
-                  size: 32,
-                )),
-          ),
-        ],
+                      .pickedDate =
+                  value ?? context.read<MainScreenModel>().pickedDate);
+          context.read<MainScreenBloc>().add(
+              ChangeDayWorkoutMainScreenEvent(
+                  date: context.read<MainScreenModel>().pickedDate));
+        },
       ),
     );
   }
@@ -274,6 +272,7 @@ class _CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
+        padding: const EdgeInsets.only(top: 48),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(

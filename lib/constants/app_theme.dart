@@ -7,7 +7,7 @@ class AppTheme{
     backgroundColor: AppColors.mainColor,
     scaffoldBackgroundColor: AppColors.mainColor,
     appBarTheme: AppBarTheme(
-      brightness: Brightness.light,
+      brightness: Brightness.dark,
       iconTheme: IconThemeData(color: AppColors.lightColor),
       color: Colors.black,
       elevation: 10,

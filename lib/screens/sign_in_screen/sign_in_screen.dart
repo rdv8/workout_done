@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:workout_done/constants/app_theme.dart';
@@ -15,7 +14,6 @@ class SignInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
     return BlocConsumer<SignInScreenBloc, SignInScreenState>(
       listener: (context, state) {
         if (state is ErrorSignInScreenState) {
