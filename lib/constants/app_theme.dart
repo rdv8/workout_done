@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 class AppTheme{
   static final appThemeData = ThemeData(
-    primaryColor: AppColors.mainColor,
+    fontFamily: 'Ubuntu',
+    primaryColor: AppColors.darkColor,
     primarySwatch: AppColors.mainMaterialColor,
-    backgroundColor: AppColors.mainColor,
-    scaffoldBackgroundColor: AppColors.mainColor,
+    backgroundColor: AppColors.darkColor,
+    scaffoldBackgroundColor: AppColors.darkColor,
     appBarTheme: AppBarTheme(
       brightness: Brightness.dark,
-      iconTheme: IconThemeData(color: AppColors.lightColor),
+      iconTheme: IconThemeData(color: AppColors.greenColor),
       color: Colors.black,
       elevation: 10,
     ),
@@ -20,7 +21,7 @@ class AppTheme{
 }
 
 class AppColors {
-  static const Color mainColor = Color(0xff085a42);
+  static const Color darkColor = Color(0xff09231c);
   static const MaterialColor mainMaterialColor = MaterialColor(0xff085a42, <int,Color>{
     50: Color(0xffd1ffc9),
     100: Color(0xffd1ffc9),
@@ -33,9 +34,10 @@ class AppColors {
     800: Color(0xff09231c),
     900: Color(0xff09231c),
   });
-  static const Color accentColor = Color(0xffd1ffc9);
-  static const Color lightColor = Color(0xff738072);
-  static const Color darkColor = Color(0xff09231c);
+  static const Color lightColor = Color(0xff879a79);
+  static const Color greenColor = Color(0xff879a79);
+  static const Color blueColor = Color(0xff879a79);
+  static const Color pinkColor = Color(0xff879a79);
 
 
 }

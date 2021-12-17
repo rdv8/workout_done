@@ -17,7 +17,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   print('___Initialed User___${FirebaseAuth.instance.currentUser?.uid}');
- //todo сделать инициализацию списков клиентов и тренировок до открытие приложения?
   Bloc.observer = AppBlocObserver();
   runApp(
     MultiProvider(

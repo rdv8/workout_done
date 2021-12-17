@@ -10,8 +10,6 @@ import 'package:workout_done/screens/main_screen/bloc/main_screen_event.dart';
 import 'package:workout_done/screens/main_screen/main_screen.dart';
 import 'package:workout_done/screens/main_screen/main_screen_model.dart';
 
-//todo привести к общему виду роуты
-
 class MainScreenRoute extends StatelessWidget {
   const MainScreenRoute({Key? key}) : super(key: key);
 
