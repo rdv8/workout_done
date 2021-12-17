@@ -1,13 +1,13 @@
-class Trainer {
+class TrainerModel {
   final String id;
   final String? email;
 
-  Trainer({
+  TrainerModel({
     required this.id,
     required this.email,
   });
 
-  factory Trainer.empty() => Trainer(
+  factory TrainerModel.empty() => TrainerModel(
         id: '',
         email: '',
       );

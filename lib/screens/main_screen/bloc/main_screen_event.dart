@@ -28,7 +28,7 @@ class ChangeDayWorkoutMainScreenEvent extends MainScreenEvent{
 }
 
 class DeleteWorkoutMainScreenEvent extends MainScreenEvent {
-  final Workout workout;
+  final WorkoutModel workout;
 
   DeleteWorkoutMainScreenEvent({required this.workout});
 }

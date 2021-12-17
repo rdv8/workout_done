@@ -40,7 +40,7 @@ class SignInScreen extends StatelessWidget {
             gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
-                colors: [AppColors.mainColor, Colors.black]),
+                colors: [AppColors.darkColor, Colors.black]),
           ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
@@ -54,37 +54,34 @@ class SignInScreen extends StatelessWidget {
                   'Workout Done!',
                   style: TextStyle(
                     fontSize: 48,
-                    color: AppColors.mainColor,
+                    color: AppColors.darkColor,
                   ),
                 ),
                 const SizedBox(
                   height: 200,
                 ),
-                ////todo изучить применение, нужен ли форм?
-                Form(
-                  child: Column(
-                    children: [
-                      CustomTextFormField(
-                        controller:
-                            context.read<SignInScreenModel>().emailController,
-                        hintText: 'Email',
-                        isObscure: false,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      CustomTextFormField(
-                        controller: context
-                            .read<SignInScreenModel>()
-                            .passwordController,
-                        hintText: 'Password',
-                        isObscure: true,
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                    ],
-                  ),
+                Column(
+                  children: [
+                    CustomTextFormField(
+                      controller:
+                          context.read<SignInScreenModel>().emailController,
+                      hintText: 'Email',
+                      isObscure: false,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CustomTextFormField(
+                      controller: context
+                          .read<SignInScreenModel>()
+                          .passwordController,
+                      hintText: 'Password',
+                      isObscure: true,
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                  ],
                 ),
                 GestureDetector(
                     onTap: () {
@@ -104,7 +101,7 @@ class SignInScreen extends StatelessWidget {
                     child: const Text(
                       'Enter',
                       style:
-                          TextStyle(color: AppColors.accentColor, fontSize: 20),
+                          TextStyle(color: AppColors.lightColor, fontSize: 20),
                     )),
                 const SizedBox(
                   height: 20,
@@ -126,7 +123,7 @@ class SignInScreen extends StatelessWidget {
                   },
                   child: const Text(
                     'Зарегистрироваться и войти',
-                    style: TextStyle(color: AppColors.lightColor),
+                    style: TextStyle(color: AppColors.greenColor),
                   ),
                 ),
                 const SizedBox(

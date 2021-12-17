@@ -5,7 +5,7 @@ abstract class StatisticScreenState {}
 class InitialStatisticScreenState extends StatisticScreenState {}
 
 class DataStatisticScreenState extends StatisticScreenState {
-  final List<Workout> workoutList;
+  final List<WorkoutModel> workoutList;
   final Map<String, int> statisticList;
   final Map<String, int> statisticTypeList;
 

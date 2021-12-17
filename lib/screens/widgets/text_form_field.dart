@@ -19,15 +19,15 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: isObscure,
       style: TextStyle(color: Color(0xffd1ffc9)),
       controller: controller,
-      cursorColor: AppColors.accentColor,
+      cursorColor: AppColors.lightColor,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(12),
         hintText: hintText,
         enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1.5, color: AppColors.darkColor)),
+            borderSide: BorderSide(width: 1.5, color: AppColors.blueColor)),
         focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1.5, color: AppColors.lightColor)),
-        hintStyle: TextStyle(color: AppColors.lightColor),
+            borderSide: BorderSide(width: 1.5, color: AppColors.greenColor)),
+        hintStyle: TextStyle(color: AppColors.greenColor),
         isCollapsed: true,
       ),
     );

@@ -4,25 +4,22 @@ import 'package:workout_done/models/trainer_model.dart';
 import 'package:workout_done/network/firebase_data.dart';
 
 class TrainerRepository extends ChangeNotifier {
-  //late final FirebaseData _firebaseData;
-  Trainer? _trainer;
+  TrainerModel? _trainer;
 
-  Trainer get getTrainer => _trainer ?? Trainer.empty();
+  TrainerModel get getTrainer => _trainer ?? TrainerModel.empty();
 
   void init({required FirebaseData firebaseData}){
-   // _firebaseData = firebaseData;
-
   }
 
 
   void initTrainer({required User? user}) async {
-    _trainer = Trainer(
+    _trainer = TrainerModel(
       id: user?.uid ?? '',
       email: user?.email ?? '',
     );
   }
 
   void clearTrainer(){
-    _trainer = Trainer.empty();
+    _trainer = TrainerModel.empty();
   }
 }

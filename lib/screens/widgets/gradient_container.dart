@@ -14,7 +14,7 @@ class GradientContainer extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [AppColors.mainColor, Colors.black]),
+            colors: [AppColors.darkColor, Colors.black]),
       ),
       child: child,
     );

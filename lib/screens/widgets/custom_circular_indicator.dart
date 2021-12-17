@@ -12,8 +12,8 @@ class CustomCircularIndicator extends StatelessWidget {
       color: Colors.black.withOpacity(0.5),
       child: Center(
         child: CircularProgressIndicator(
-          backgroundColor: AppColors.mainColor,
-          color: AppColors.accentColor,
+          backgroundColor: AppColors.darkColor,
+          color: AppColors.lightColor,
         ),
       ),
     );

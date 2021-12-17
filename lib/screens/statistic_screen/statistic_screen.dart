@@ -9,7 +9,6 @@ import 'package:workout_done/screens/statistic_screen/bloc/statistic_screen_stat
 import 'package:workout_done/screens/statistic_screen/statistic_screen_model.dart';
 import 'package:workout_done/screens/widgets/gradient_container.dart';
 
-//todo сделать route в статистику и сделать инициализацию списка при открытии.
 class StatisticScreen extends StatelessWidget {
   const StatisticScreen({Key? key}) : super(key: key);
 
@@ -24,7 +23,7 @@ class StatisticScreen extends StatelessWidget {
               ? Scaffold(
                   appBar: AppBar(
                     centerTitle: true,
-                    title: Text('Статистика',style: TextStyle(color: AppColors.lightColor),),
+                    title: Text('Статистика',style: TextStyle(color: AppColors.greenColor),),
                   ),
                   body:
                   GradientContainer(
@@ -36,11 +35,11 @@ class StatisticScreen extends StatelessWidget {
                           // todo сделать переключение или выбор месяца. Расписать по фамилиям кол-во тре-ок и сплит, дети?
                           Center(
                             child: Text(
-                                'Количество тренирвок за ${Constants.monthList[context.read<StatisticScreenModel>().pickedDate.month]}',style: TextStyle(color: AppColors.accentColor),),
+                                'Количество тренирвок за ${Constants.monthList[context.read<StatisticScreenModel>().pickedDate.month]}',style: TextStyle(color: AppColors.lightColor),),
                           ),
                           Center(
                             child: Text(
-                                '${context.read<WorkoutListRepository>().getWorkoutMonthList.length}',style: TextStyle(color: AppColors.accentColor),),
+                                '${context.read<WorkoutListRepository>().getWorkoutMonthList.length}',style: TextStyle(color: AppColors.lightColor),),
                           ),
                           SizedBox(
                             height: 16,
@@ -51,11 +50,11 @@ class StatisticScreen extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(child: Text('${workout.key}',style: TextStyle(color: AppColors.accentColor),)),
+                                  Expanded(child: Text('${workout.key}',style: TextStyle(color: AppColors.lightColor),)),
                                   const SizedBox(
                                     width: 8,
                                   ),
-                                  Text('${workout.value}',style: TextStyle(color: AppColors.accentColor),),
+                                  Text('${workout.value}',style: TextStyle(color: AppColors.lightColor),),
                                 ],
                               ),
                             ),
@@ -69,11 +68,11 @@ class StatisticScreen extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('${type.key}',style: TextStyle(color: AppColors.accentColor),),
+                                  Text('${type.key}',style: TextStyle(color: AppColors.lightColor),),
                                   const SizedBox(
                                     width: 8,
                                   ),
-                                  Text('${type.value}',style: TextStyle(color: AppColors.accentColor),),
+                                  Text('${type.value}',style: TextStyle(color: AppColors.lightColor),),
                                 ],
                               ),
                             ),

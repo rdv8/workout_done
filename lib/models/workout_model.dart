@@ -1,4 +1,4 @@
-class Workout {
+class WorkoutModel {
   final String? id;
   final String trainerId;
   final String clientId;
@@ -10,7 +10,7 @@ class Workout {
   final int month;
   final int year;
 
-  Workout({
+  WorkoutModel({
     this.id,
     required this.trainerId,
     required this.clientId,
@@ -23,7 +23,7 @@ class Workout {
     required this.isTeenage,
   });
 
-  factory Workout.empty() => Workout(
+  factory WorkoutModel.empty() => WorkoutModel(
         isSplit: false,
         isDiscount: false,
         isTeenage: false,

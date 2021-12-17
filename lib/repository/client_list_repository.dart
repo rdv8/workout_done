@@ -9,10 +9,10 @@ class ClientListRepository extends ChangeNotifier{
 
   List<ClientModel> get getClientList => _clientList ?? [];
 
-  void init({required TrainerRepository trainerRepository}){
+  Future<void> init({required TrainerRepository trainerRepository}) async{
     _trainerRepository = trainerRepository;
     if (_trainerRepository.getTrainer.id.isNotEmpty) {
-      updateClientList();
+      await updateClientList();
     }
   }
 

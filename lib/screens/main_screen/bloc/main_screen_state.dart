@@ -7,7 +7,7 @@ abstract class MainScreenState {
 class InitialMainScreenState extends MainScreenState {}
 
 class DataMainScreenState extends MainScreenState {
-  final List<Workout> workoutList;
+  final List<WorkoutModel> workoutList;
   DataMainScreenState ({required this.workoutList});
 }
 

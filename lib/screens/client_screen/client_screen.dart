@@ -33,7 +33,7 @@ class ClientScreen extends StatelessWidget {
             centerTitle: true,
             title: const Text(
               'Клиенты',
-              style: TextStyle(color: AppColors.lightColor),
+              style: TextStyle(color: AppColors.greenColor),
             ),
           ),
           body: GradientContainer(
@@ -84,7 +84,7 @@ class _Body extends StatelessWidget {
                 title: Center(
                   child: Text(
                     '${_clientList[index].lastname.isEmpty ? '${index + 1}' : _clientList[index].lastname} ${_clientList[index].isSplit == true ? '(Сплит)' : ''}',
-                    style: TextStyle(color: AppColors.accentColor),
+                    style: TextStyle(color: AppColors.lightColor),
                   ),
                 ),
               ),
@@ -93,7 +93,7 @@ class _Body extends StatelessWidget {
           ElevatedButton(
             style: ButtonStyle(
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    side: BorderSide(color: AppColors.lightColor)))),
+                    side: BorderSide(color: AppColors.greenColor)))),
             onPressed: () async {
               await showCustomModalBottomSheet(
                       context: context,
@@ -114,7 +114,7 @@ class _Body extends StatelessWidget {
             child: const Text(
               'Добавить клиента',
               style: TextStyle(
-                color: AppColors.accentColor,
+                color: AppColors.lightColor,
               ),
             ),
           ),
@@ -149,10 +149,10 @@ class CustomModalClient extends StatelessWidget {
           ),
           Text(
             client == null ? 'Добавить клиента' : "${client?.name}",
-            style: TextStyle(fontSize: 20, color: AppColors.accentColor),
+            style: TextStyle(fontSize: 20, color: AppColors.lightColor),
           ),
           Divider(
-            color: AppColors.lightColor,
+            color: AppColors.greenColor,
             height: 20,
             thickness: 2,
             indent: 50,
@@ -160,27 +160,27 @@ class CustomModalClient extends StatelessWidget {
           ),
           TextFormField(
             textCapitalization: TextCapitalization.words,
-            cursorColor: AppColors.lightColor,
-            style: TextStyle(color: AppColors.accentColor),
+            cursorColor: AppColors.greenColor,
+            style: TextStyle(color: AppColors.lightColor),
             focusNode: context.read<ClientScreenModel>().lastNameFocusNode,
             controller: context.read<ClientScreenModel>().lastNameController,
             decoration: InputDecoration(
               hintText: 'Фамилия',
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: AppColors.lightColor),
+                borderSide: BorderSide(color: AppColors.greenColor),
               ),
             ),
           ),
           TextFormField(
             textCapitalization: TextCapitalization.words,
-            cursorColor: AppColors.lightColor,
-            style: TextStyle(color: AppColors.accentColor),
+            cursorColor: AppColors.greenColor,
+            style: TextStyle(color: AppColors.lightColor),
             focusNode: context.read<ClientScreenModel>().nameFocusNode,
             controller: context.read<ClientScreenModel>().nameController,
             decoration: InputDecoration(
               hintText: 'Имя',
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: AppColors.lightColor),
+                borderSide: BorderSide(color: AppColors.greenColor),
               ),
             ),
           ),
@@ -226,7 +226,7 @@ class CustomModalClient extends StatelessWidget {
                           shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                   side: BorderSide(
-                                      color: AppColors.lightColor)))),
+                                      color: AppColors.greenColor)))),
                       onPressed: () {
                         context.read<ClientScreenBloc>().add(
                               AddClientEvent(
@@ -255,7 +255,7 @@ class CustomModalClient extends StatelessWidget {
                       child: const Text(
                         'Добавить',
                         style: TextStyle(
-                          color: AppColors.accentColor,
+                          color: AppColors.lightColor,
                         ),
                       ))
                   : Column(
@@ -345,7 +345,7 @@ class _CheckBoxRowState extends State<CheckBoxRow> {
       children: [
         Text(
           widget.title,
-          style: TextStyle(color: AppColors.accentColor),
+          style: TextStyle(color: AppColors.lightColor),
         ),
         const SizedBox(
           width: 8,

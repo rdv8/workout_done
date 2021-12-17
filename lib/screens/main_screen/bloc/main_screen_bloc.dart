@@ -64,7 +64,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     //todo доделать, распределить как-то с initialEvent задачи
     try{
       await _firebaseData.addWorkout(
-        Workout(
+        WorkoutModel(
           trainerId: _trainerRepository.getTrainer.id,
           clientId: event.client.id ?? '',
           clientLastName: event.client.lastname,

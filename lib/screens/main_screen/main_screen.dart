@@ -60,12 +60,11 @@ class _CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   AppBar build(BuildContext context) {
-    //todo: Проверить свойство в AppBar'e
     return AppBar(
       centerTitle: true,
       title: Text(
         'Тренировки за ${context.read<MainScreenModel>().pickedDate.day} ${Constants.monthDayList[context.read<MainScreenModel>().pickedDate.month]}',
-        style: TextStyle(color: AppColors.lightColor),
+        style: TextStyle(color: AppColors.greenColor),
       ),
     );
   }
@@ -89,7 +88,7 @@ class _Body extends StatelessWidget {
                     child: Center(
                       child: Text(
                         'За этот день не проведено ни одной тренировки.',
-                        style: TextStyle(color: AppColors.accentColor),
+                        style: TextStyle(color: AppColors.lightColor),
                       ),
                     ),
                   )
@@ -117,11 +116,11 @@ class _Body extends StatelessWidget {
                                 return await showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    backgroundColor: AppColors.mainColor,
+                                    backgroundColor: AppColors.darkColor,
                                     title: Text(
                                       'Удалить тренировку?',
                                       style: TextStyle(
-                                          color: AppColors.accentColor),
+                                          color: AppColors.lightColor),
                                     ),
                                     actions: [
                                       TextButton(
@@ -131,7 +130,7 @@ class _Body extends StatelessWidget {
                                           child: Text(
                                             'Дa',
                                             style: TextStyle(
-                                                color: AppColors.accentColor),
+                                                color: AppColors.lightColor),
                                           )),
                                       TextButton(
                                           onPressed: () {
@@ -140,7 +139,7 @@ class _Body extends StatelessWidget {
                                           child: Text(
                                             'Нет',
                                             style: TextStyle(
-                                                color: AppColors.accentColor),
+                                                color: AppColors.lightColor),
                                           )),
                                     ],
                                   ),
@@ -165,8 +164,8 @@ class _Body extends StatelessWidget {
                               child: ListTile(
                                   title: Center(
                                       child: Text(
-                                '${index + 1}. ${item.clientLastName}',
-                                style: TextStyle(color: AppColors.accentColor),
+                                '${index + 1}. ${item.clientLastName} ${item.isSplit == true ? '(Сплит)' : ''}',
+                                style: TextStyle(color: AppColors.lightColor),
                               ))));
                         }),
                   ),
@@ -199,21 +198,21 @@ class _Body extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Row(children: [
-                      Icon(Icons.chevron_left,color: AppColors.lightColor,),
-                      Icon(Icons.chevron_left,color: AppColors.lightColor,),
+                      Icon(Icons.chevron_left,color: AppColors.greenColor,),
+                      Icon(Icons.chevron_left,color: AppColors.greenColor,),
                     ],),
                     Row(children: [
-                      Icon(Icons.chevron_right,color: AppColors.lightColor,),
-                      Icon(Icons.chevron_right,color: AppColors.lightColor,),
+                      Icon(Icons.chevron_right,color: AppColors.greenColor,),
+                      Icon(Icons.chevron_right,color: AppColors.greenColor,),
                     ],)
 
                 ],),
                 height: 50,
                 width: MediaQuery.of(context).size.width / 2,
                 decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.lightColor),
+                    border: Border.all(color: AppColors.greenColor),
                     borderRadius: BorderRadius.circular(16),
-                    color: AppColors.mainColor),
+                    color: AppColors.darkColor),
               ),
             ),
             const SizedBox(
@@ -235,12 +234,12 @@ class _DateButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 32),
       child: FloatingActionButton(
-        backgroundColor: AppColors.lightColor,
+        backgroundColor: AppColors.greenColor,
         child: Text(
           '${context.read<MainScreenModel>().pickedDate.day}.${context.read<MainScreenModel>().pickedDate.month}',
           style: TextStyle(
             fontSize: 18,
-            color: AppColors.mainColor,
+            color: AppColors.darkColor,
           ),
         ),
         onPressed: () async {
@@ -281,7 +280,7 @@ class _CustomDrawer extends StatelessWidget {
               end: Alignment.topCenter,
               colors: [
                 Colors.black,
-                AppColors.mainColor,
+                AppColors.darkColor,
               ]),
         ),
         child: Column(
@@ -294,8 +293,8 @@ class _CustomDrawer extends StatelessWidget {
                   height: 40,
                 ),
                 const Text(
-                  'Workout Done!',
-                  style: TextStyle(fontSize: 30, color: AppColors.accentColor),
+                  'Дело сделано!',
+                  style: TextStyle(fontSize: 48, color: AppColors.lightColor,fontFamily: 'ComforterBrush' ),
                 ),
                 Divider(
                   height: 40,
@@ -308,6 +307,7 @@ class _CustomDrawer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 48,),
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pop();
@@ -315,14 +315,14 @@ class _CustomDrawer extends StatelessWidget {
                     },
                     child: Row(
                       children: [
-                        Icon(Icons.wc, color: AppColors.accentColor),
+                        Icon(Icons.wc, color: AppColors.lightColor),
                         const SizedBox(
                           width: 8,
                         ),
                         const Text(
                           'Клиенты',
                           style: TextStyle(
-                              fontSize: 20, color: AppColors.lightColor),
+                              fontSize: 20, color: AppColors.greenColor),
                         ),
                       ],
                     ),
@@ -339,14 +339,14 @@ class _CustomDrawer extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(Icons.assessment_outlined,
-                            color: AppColors.accentColor),
+                            color: AppColors.lightColor),
                         const SizedBox(
                           width: 8,
                         ),
                         const Text(
                           'Статистика',
                           style: TextStyle(
-                              fontSize: 20, color: AppColors.lightColor),
+                              fontSize: 20, color: AppColors.greenColor),
                         ),
                       ],
                     ),
@@ -364,13 +364,13 @@ class _CustomDrawer extends StatelessWidget {
                     },
                     child: Row(
                       children: [
-                        Icon(Icons.exit_to_app, color: AppColors.accentColor),
+                        Icon(Icons.exit_to_app, color: AppColors.lightColor),
                         const SizedBox(
                           width: 8,
                         ),
                         const Text('Выход',
                             style: TextStyle(
-                                fontSize: 20, color: AppColors.lightColor)),
+                                fontSize: 20, color: AppColors.greenColor)),
                       ],
                     ),
                   ),
@@ -398,10 +398,10 @@ class _CustomModalAddWorkout extends StatelessWidget {
           ),
           Text(
             'Тренировка за ${context.read<MainScreenModel>().pickedDate.day}.${context.read<MainScreenModel>().pickedDate.month}',
-            style: TextStyle(fontSize: 20, color: AppColors.accentColor),
+            style: TextStyle(fontSize: 20, color: AppColors.lightColor),
           ),
           Divider(
-            color: AppColors.lightColor,
+            color: AppColors.greenColor,
             height: 20,
             thickness: 2,
             indent: 50,
@@ -423,9 +423,9 @@ class _CustomModalAddWorkout extends StatelessWidget {
                   Navigator.of(context).pop(true);
                 },
                 child: Text(
-                  '${context.read<ClientListRepository>().getClientList[index].lastname}',
+                  '${context.read<ClientListRepository>().getClientList[index].lastname}${context.read<ClientListRepository>().getClientList[index].isSplit == true ? ' (Сплит)' : ''}',
                   style: TextStyle(
-                      color: AppColors.accentColor,
+                      color: AppColors.lightColor,
                       fontWeight: FontWeight.w400),
                 ),
               ),
@@ -449,10 +449,10 @@ class _CustomFabState extends State<_CustomFab> {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       heroTag: 1,
-      backgroundColor: AppColors.lightColor,
+      backgroundColor: AppColors.greenColor,
       child: Icon(
         Icons.add,
-        color: AppColors.mainColor,
+        color: AppColors.darkColor,
       ),
       onPressed: () {
         showCustomModalBottomSheet(

@@ -5,13 +5,11 @@ import 'package:workout_done/models/client_model.dart';
 import 'package:workout_done/models/trainer_model.dart';
 import 'package:workout_done/models/workout_model.dart';
 
-//todo нужен ли нотифайер
 class FirebaseData extends ChangeNotifier {
   final _trainers = FirebaseFirestore.instance.collection('trainers');
 
   /// Тренер
-  //todo сделать футуре воид?
-  void getTrainerList() async {
+  Future<void> getTrainerList() async {
     final trainerList = await _trainers.get();
     print('${trainerList.docs.map((e) => e['email']).toList()}');
   }
@@ -22,7 +20,7 @@ class FirebaseData extends ChangeNotifier {
     });
   }
 
-  Future<void> delTrainer(Trainer trainer) async {
+  Future<void> delTrainer(TrainerModel trainer) async {
     await _trainers.doc('ZASnnniv7ZG0EYcfwlUf').delete();
   }
 
@@ -86,8 +84,6 @@ class FirebaseData extends ChangeNotifier {
     return response;
   }
 
-  //todo orderBy сделать сортированные листы
-
   Future<QuerySnapshot<Map<String, dynamic>>> getMonthWorkoutList(
       String trainerID, DateTime date) async {
     final response = await _trainers
@@ -109,7 +105,7 @@ class FirebaseData extends ChangeNotifier {
     return response;
   }
 
-  Future<void> addWorkout(Workout workout) async {
+  Future<void> addWorkout(WorkoutModel workout) async {
     await _trainers.doc(workout.trainerId).collection('workouts').add({
       'trainerId': workout.trainerId,
       'clientId': workout.clientId,
@@ -124,7 +120,7 @@ class FirebaseData extends ChangeNotifier {
     });
   }
 
-  Future<void> delWorkout(Workout workout) async {
+  Future<void> delWorkout(WorkoutModel workout) async {
     await _trainers
         .doc(workout.trainerId)
         .collection('workouts')
@@ -132,7 +128,7 @@ class FirebaseData extends ChangeNotifier {
         .delete();
   }
 
-  Future<void> updateWorkout(Workout workout) async {
+  Future<void> updateWorkout(WorkoutModel workout) async {
     await _trainers
         .doc(workout.trainerId)
         .collection('clients')

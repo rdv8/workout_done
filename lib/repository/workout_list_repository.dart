@@ -5,12 +5,12 @@ import 'package:workout_done/repository/trainer_repository.dart';
 
 class WorkoutListRepository extends ChangeNotifier {
   late final TrainerRepository _trainerRepository;
-  List<Workout>? _workoutDayList;
-  List<Workout>? _workoutMonthList;
+  List<WorkoutModel>? _workoutDayList;
+  List<WorkoutModel>? _workoutMonthList;
 
-  List<Workout> get getWorkoutDayList => _workoutDayList ?? [];
+  List<WorkoutModel> get getWorkoutDayList => _workoutDayList ?? [];
 
-  List<Workout> get getWorkoutMonthList => _workoutMonthList ?? [];
+  List<WorkoutModel> get getWorkoutMonthList => _workoutMonthList ?? [];
 
   Future<void> init({required TrainerRepository trainerRepository}) async {
     _trainerRepository = trainerRepository;
@@ -26,7 +26,7 @@ class WorkoutListRepository extends ChangeNotifier {
         .getDayWorkoutList(_trainerRepository.getTrainer.id, date);
     _workoutDayList = response.docs
         .map(
-          (e) => Workout(
+          (e) => WorkoutModel(
             id: e.id,
             trainerId: e['trainerId'],
             clientId: e['clientId'],
@@ -47,7 +47,7 @@ class WorkoutListRepository extends ChangeNotifier {
         .getMonthWorkoutList(_trainerRepository.getTrainer.id, date);
     _workoutMonthList = response.docs
         .map(
-          (e) => Workout(
+          (e) => WorkoutModel(
             id: e.id,
             trainerId: e['trainerId'],
             clientId: e['clientId'],
